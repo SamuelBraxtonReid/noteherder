@@ -5,12 +5,24 @@ import NoteList from './NoteList';
 import NoteForm from './NoteForm';
 
 class Main extends React.Component {
+
   constructor () {
     super()
     this.state = {
       currentNote: this.blankNote(),
       notes: []
     }
+  }
+
+  componentWillMount() {
+    const notes = JSON.parse(localStorage.getItem('notes'));
+    if (notes) {
+      this.setState({ notes });
+    }
+  }
+
+  componentDidUpdate() {
+    localStorage.setItem('notes', JSON.stringify(this.state.notes));
   }
 
   blankNote = () => {
