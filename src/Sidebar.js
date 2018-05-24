@@ -1,38 +1,45 @@
 import React from 'react';
+import { StyleSheet , css } from 'aphrodite';
 
 import quill from './quill.svg';
 import newIcon from './new.png';
 import newHover from './new-hover.png';
 
-const Sidebar = () => {
+const Sidebar = ({ resetCurrentNote }) => {
   return (
-    <nav className="Sidebar"
-         style={styles.sidebar}
-    >
-      <div className="logo" style={styles.logo}>
-        <img src={quill} 
-          alt="Noteherder" 
-          style={styles.logoImg}
-        />
+    <nav className={css(styles.sidebar)}>
+      <div className={css(styles.logo)}>
+        <img src={quill} alt="Noteherder" className={css(styles.logoImg)} />
       </div>
-      <a className="new-note" href="/notes">
-        <img src={newHover} alt="New note" />
-        <img className="outline" src={newIcon} alt="New note" />
+      <a href="/notes" className={css(styles.newNote)} onClick={(ev) => {
+        ev.preventDefault();
+        resetCurrentNote();
+      }}>
+        <img 
+          src={newHover} 
+          alt="New note" 
+          className={css(styles.newNoteImage)} 
+        />
+        <img 
+          src={newIcon} 
+          alt="New note" 
+          className={css(styles.newNoteImage, styles.newNoteImageHover)} 
+        />
       </a>
-      <div className="SignOut">
-        <button>
-          <i className="fa fa-sign-out"></i>
+      <div className={css(styles.signOut)}>
+        <button className={css(styles.button)}>
+          <i title="sign out" className={`fas fa-sign-out-alt ${css(styles.buttonIcon)}`}></i>
         </button>
       </div>
     </nav>
   );
 };
 
-const styles = {
+const styles = StyleSheet.create({
   sidebar: {
     width: "6rem",
     backgroundColor: "#F3F3F3",
-    padding: '0.5rem 0',
+    padding: '0.5rem',
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center'
@@ -45,7 +52,36 @@ const styles = {
   logoImg: {
     width: "3rem",
     paddingLeft: "0.4rem"
+  },
+  newNote: {
+    marginTop: "2rem",
+    position: "relative",
+    width: "40px"
+  },
+  newNoteImage: {
+    position: "absolute",
+    left: "0",
+    width: "100%",
+    transition: "opacity 0.25s ease-in-out",
+  },
+  newNoteImageHover: {
+    ":hover": {
+      opacity: "0"
+    }
+  },
+  signOut: {
+    position: "absolute",
+    bottom: "1rem"
+  },
+  button: {
+    backgroundColor: "transparent",
+    border: "0",
+    color: "#008BF8",
+    cursor: "pointer"
+  },
+  buttonIcon: {
+    fontSize: "2rem"
   }
-};
+});
 
 export default Sidebar;
