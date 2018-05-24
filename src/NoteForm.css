@@ -2,7 +2,7 @@
     -ms-flex-positive: 1;
     flex-grow: 1;
     padding: 0 3rem;
-  }
+}
 .NoteForm .form-actions {
 padding-top: 1rem;
 margin-left: -2rem;
@@ -15,6 +15,7 @@ align-content: center;
 border: none;
 background: none;
 padding: 0;
+font-size: 3rem;
 }
 .NoteForm button[type=submit] {
 background-color: #008bf8;
