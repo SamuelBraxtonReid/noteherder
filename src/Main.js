@@ -3,6 +3,7 @@ import React from 'react';
 import Sidebar from './Sidebar';
 import NoteList from './NoteList';
 import NoteForm from './NoteForm';
+import base from './base'
 
 class Main extends React.Component {
 
@@ -15,14 +16,11 @@ class Main extends React.Component {
   }
 
   componentWillMount() {
-    const notes = JSON.parse(localStorage.getItem('notes'));
-    if (notes) {
-      this.setState({ notes });
-    }
-  }
-
-  componentDidUpdate() {
-    localStorage.setItem('notes', JSON.stringify(this.state.notes));
+    base.syncState('notes', {
+      context: this,
+      state: 'notes',
+      asArray: true
+    });
   }
 
   blankNote = () => {
