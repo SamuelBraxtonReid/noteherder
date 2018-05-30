@@ -3,7 +3,7 @@ import React from 'react';
 import Sidebar from './Sidebar';
 import NoteList from './NoteList';
 import NoteForm from './NoteForm';
-import base from './base'
+import base from './base';
 
 class Main extends React.Component {
 
@@ -16,7 +16,7 @@ class Main extends React.Component {
   }
 
   componentWillMount() {
-    base.syncState('notes', {
+    base.syncState(`notes/${this.props.uid}`, {
       context: this,
       state: 'notes',
       asArray: true
@@ -64,11 +64,23 @@ class Main extends React.Component {
 
   render () {
     return (
-      <div className="Main" 
-          style={style} >
-        <Sidebar resetCurrentNote={this.resetCurrentNote}/>
-        <NoteList notes={this.state.notes} setCurrentNote={this.setCurrentNote} />
-        <NoteForm currentNote={this.state.currentNote} saveNote={this.saveNote} removeNote={this.removeNote}/>
+      <div 
+        className="Main" 
+        style={style} 
+      >
+        <Sidebar 
+          resetCurrentNote={this.resetCurrentNote} 
+          signOut={this.props.signOut} 
+        />
+        <NoteList 
+          notes={this.state.notes} 
+          setCurrentNote={this.setCurrentNote} 
+        />
+        <NoteForm 
+          currentNote={this.state.currentNote} 
+          saveNote={this.saveNote} 
+          removeNote={this.removeNote} 
+        />
       </div>
     );
   }
