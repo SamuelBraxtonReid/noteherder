@@ -1,17 +1,16 @@
-import React from 'react';
+import React from 'react'
+import { Route, Switch } from 'react-router-dom'
 
-import Sidebar from './Sidebar';
-import NoteList from './NoteList';
-import NoteForm from './NoteForm';
-import base from './base';
+import base from './base'
+import Sidebar from './Sidebar'
+import NoteList from './NoteList'
+import NoteForm from './NoteForm'
 
 class Main extends React.Component {
-
-  constructor () {
+  constructor() {
     super()
     this.state = {
-      currentNote: this.blankNote(),
-      notes: []
+      notes: [],
     }
   }
 
@@ -19,77 +18,90 @@ class Main extends React.Component {
     base.syncState(`notes/${this.props.uid}`, {
       context: this,
       state: 'notes',
-      asArray: true
-    });
-  }
-
-  blankNote = () => {
-    return {
-      id: 0,
-      title: "",
-      body: "" 
-    }
-  }
-
-  setCurrentNote = (note) => {
-    this.setState({currentNote: note});
-  }
-
-  resetCurrentNote = () => {
-    this.setCurrentNote(this.blankNote());
+      asArray: true,
+    })
   }
 
   saveNote = (note) => {
-    const notes = [...this.state.notes];
-    if (note.id) {
-      const i = notes.findIndex(currentNote => currentNote.id === note.id);
-      notes[i] = note;
+    let shouldRedirect = false
+    const timestamp = Date.now()
+    note.updatedAt = timestamp
+
+    const notes = [...this.state.notes]
+
+    if (!note.id) {
+      // new note
+      note.id = timestamp
+      notes.push(note)
+      shouldRedirect = true
     } else {
-      note.id = Date.now();
-      notes.push(note);
+      // existing note
+      const i = notes.findIndex(currentNote => currentNote.id === note.id)
+      notes[i] = note
     }
-    this.setState({ notes });
-    this.setCurrentNote(note);
-  }
 
-  removeNote = (note) => {
-    const notes = [...this.state.notes];
-    if (note.id) {
-      const i = notes.findIndex(currentNote => currentNote.id === note.id);
-      notes.splice(i, 1);
-      this.setState({ notes });
-      this.setCurrentNote(this.blankNote());
+    notes.sort((a, b) => {
+      return b.updatedAt - a.updatedAt
+    })
+
+    this.setState({ notes })
+
+    if (shouldRedirect) {
+      this.props.history.push(`/notes/${note.id}`)
     }
-  }
-
-  render () {
-    return (
-      <div 
-        className="Main" 
-        style={style} 
-      >
-        <Sidebar 
-          resetCurrentNote={this.resetCurrentNote} 
-          signOut={this.props.signOut} 
-        />
-        <NoteList 
-          notes={this.state.notes} 
-          setCurrentNote={this.setCurrentNote} 
-        />
-        <NoteForm 
-          currentNote={this.state.currentNote} 
-          saveNote={this.saveNote} 
-          removeNote={this.removeNote} 
-        />
-      </div>
-    );
-  }
-};
-
-const style = {
-  display: "flex",
-  height: "100vh",
-  alignItems: "stretch" 
 }
 
-export default Main;
+  removeNote = (currentNote) => {
+    const notes = [...this.state.notes]
+
+    const i = notes.findIndex(note => note.id === currentNote.id)
+    if (i > -1) {
+      notes.splice(i, 1)
+      this.setState({ notes })
+      this.props.history.push('/notes')
+    }
+  }
+
+  render() {
+    const formProps = {
+      saveNote: this.saveNote,
+      removeNote: this.removeNote,
+      notes: this.state.notes,
+    }
+
+    return (
+      <div className="Main" style={style}>
+        <Sidebar signOut={this.props.signOut} />
+        <NoteList notes={this.state.notes} />
+
+        <Switch>
+          <Route
+            path="/notes/:id"
+            render={navProps => (
+              <NoteForm
+                {...formProps}
+                {...navProps}
+              />
+            )}
+          />
+          <Route
+            render={navProps => (
+              <NoteForm
+                {...formProps}
+                {...navProps}
+              />
+            )}
+          />
+        </Switch>
+      </div>
+    )
+  }
+}
+
+const style = {
+  display: 'flex',
+  height: '100vh',
+  alignItems: 'stretch',
+}
+
+export default Main
